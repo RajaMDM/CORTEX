@@ -54,10 +54,11 @@ def push_node(slug: str, title: str, node_type: str, summary: str = ""):
                 n.cortex_version = '0.1'
         """, slug=slug, title=title, type=node_type, summary=summary)
 
-        # Add type label
+        # Add type label — sanitize for Cypher (no hyphens, uppercase)
+        safe_label = node_type.replace("-", "_").replace(" ", "_").upper()
         s.run(f"""
             MATCH (n:CortexNode {{slug: $slug}})
-            SET n:{node_type}
+            SET n:{safe_label}
         """, slug=slug)
     driver.close()
     print(f"  ✓ Node: [{node_type}] {slug}")
